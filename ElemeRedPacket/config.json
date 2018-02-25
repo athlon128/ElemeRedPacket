@@ -1,0 +1,3 @@
+﻿{
+	"DBString":"server=*;database=eleme;uid=root;pwd=*;charset='gbk';SslMode=None"
+}

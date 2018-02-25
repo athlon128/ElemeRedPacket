@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="config.json" />
     <Content Remove="Model\cookies.json" />
     <Content Remove="wwwroot\1.jpg" />
     <Content Remove="wwwroot\2.jpg" />
@@ -12,9 +13,11 @@
     <Content Remove="wwwroot\4.jpg" />
     <Content Remove="wwwroot\5.jpg" />
     <Content Remove="wwwroot\index.html" />
+    <Content Remove="wwwroot\onekey.html" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="HtmlAgilityPack" Version="1.7.0" />
     <PackageReference Include="Microsoft.AspNetCore.All" Version="2.0.5" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.0.2" />
     <PackageReference Include="MySql.Data" Version="6.10.6" />
@@ -26,6 +29,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="config.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="cookies.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -42,6 +48,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="wwwroot\5.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="wwwroot\onekey.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="wwwroot\index.html">

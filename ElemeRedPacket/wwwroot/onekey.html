@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <title>饿了么拼手气红包助手</title>
+  <title>饿了么红包  一键领取</title>
   <link href="/css/bootstrap.min.css" rel="stylesheet">
   <style>
     .panel {
@@ -14,7 +14,7 @@
       margin: 15px auto;
     }
 
-    #submit {
+    button {
       width: 100%;
     }
 
@@ -40,65 +40,53 @@
 
 <body>
     <div class="panel panel-default">
-        <div class="panel-heading" align="center"><b>饿了么拼手气红包助手</b></div>
+        <div class="panel-heading" align="center"><b>饿了么红包  一键领取</b></div>
         <div class="panel-body">
             <div class="form-group">
                 <label for="mobile">手机号码</label>
                 <input type="mobile" class="form-control" id="mobile" placeholder="11位手机号码">
             </div>
-            <div class="form-group">
-                <label for="url">红包链接</label>
-                <input type="text" class="form-control" id="url" placeholder="https://h5.ele.me/hongbao/开头的链接">
-            </div>
+
             <div class="form-group">
                 <button type="button" class="btn btn-success" id="submit">马上领取</button>
-            </div>
-            <div id="how2use">
-                <pre><b>如何获取红包链接？</b>
-                <br><b>1、打开饿了么订单分享红包</b>
-                <br><img src="/1.jpg" alt="">
-
-                <br><b>2、选择QQ</b>
-                <br><img src="/2.jpg" alt="">
-
-                <br><b>3、选择我的电脑</b>
-                <br><img src="/3.jpg" alt="">
-
-                <br><b>4、复制链接</b>
-                <br><img src="/4.jpg" alt=""></pre>
             </div>
             <div id="donate" style="display:none;">
                 <pre><b>如果这个功能对您有帮助，欢迎微信捐赠</b>
                 <br><img src="/5.jpg" alt=""></pre>
             </div>
-
+			<div id="manual" style="display:none;" class="form-group">
+			    <b>红包资源比较紧缺，可以稍后再试或者使用手动模式。</b>
+                <button type="button" class="btn btn-info" id="toManual">手动领取</button>
+            </div>
         </div>
 
         <script src="/js/jquery.min.js"></script>
         <script src="/js/bootstrap.min.js"></script>
 
         <script>
+			$('#toManual').on('click', function (e) {
+				window.location.href = "/index.html";
+			})
             $('#submit').on('click', function (e) {
                 var $submit = $(this)
-                var url = $.trim($('#url').val())
-                if (url.length == 0) {
-                    alert("请往下看说明，输入拼手气红包的链接后再试一次")
+                var mobile = $.trim($('#mobile').val())
+                if (mobile.length != 11) {
+                    alert("请输入正确的手机号后再试一次")
                 }
                 else {
                     $submit.text('正在领取...').prop('disabled', true)
-                    $.post('api/RedPacket', JSON.stringify({
-                        luckyNumber: getQueryString("lucky_number", url),
-                        sn: getQueryString("sn", url),
-                        mobile: $.trim($('#mobile').val())
-                    }))
+                    $.get('api/OneKey?mobile='+mobile)
                         .always(function () {
                             $submit.text('马上领取').prop('disabled', false)
                         })
                         .done(function (res) {
                             if (res.code == 1) {
-                                showdiv('how2use', false)
                                 showdiv('donate', true)
                             }
+							else if(res.code==3)
+							{
+								showdiv('manual', true)
+							}
                             alert(res.msg)
                         })
                         .fail(function (err) {
