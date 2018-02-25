@@ -95,18 +95,19 @@
                             $submit.text('马上领取').prop('disabled', false)
                         })
                         .done(function (res) {
-                            alert(res.msg)
                             if (res.code == 1) {
                                 showdiv('how2use', false)
                                 showdiv('donate', true)
                             }
+                            alert(res.msg)
                         })
                         .fail(function (err) {
                             alert('服务器繁忙，请稍后重试')
                         })
+                    localStorage.setItem('mobile', $('#mobile').val())
                 }
             })
-
+            $('#mobile').val($.trim(localStorage.getItem('mobile')))
             function getQueryString(name, url) {
                 var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
                 var r = url.substr(1).match(reg);

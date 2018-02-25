@@ -21,6 +21,7 @@ namespace ElemeRedPacket.Controllers
 
         static Dictionary<int, string> msgs = new Dictionary<int, string>();
         static List<UserInfo> userlist;
+        static int workerID = 10;
         static RedPacketController()
         {
             StreamReader sr = new StreamReader(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "cookies.json"), Encoding.Default);
@@ -31,12 +32,19 @@ namespace ElemeRedPacket.Controllers
             msgs.Add(4, "领到了!");
             msgs.Add(5, "每天最多领5个!");
         }
+        public static int GetWorkerID()
+        {
+            workerID++;
+            if (workerID > userlist.Count - 1)
+                workerID = 10;
+            return workerID;
+        }
 
         // GET: api/RedPacket
         [HttpGet]
         public IEnumerable<string> Get()
         {
-            return new string[] { "value1", "value2" };
+            return new string[] { "value1", GetWorkerID().ToString() };
         }
 
 
@@ -65,7 +73,7 @@ namespace ElemeRedPacket.Controllers
                 RedPacketHelper rph = new RedPacketHelper();
                 for (int i = 0; i < userlist.Count; i++)
                 {
-                    UserInfo user = isLucky ? userlist[userlist.Count - 1] : userlist[i];
+                    UserInfo user = isLucky ? userlist[GetWorkerID()] : userlist[i];
                     user.phone = isLucky ? mobile : rph.GetRandomMobile();
                     user.group_sn = sn;
                     rph.ChangePhone(user);
@@ -76,17 +84,33 @@ namespace ElemeRedPacket.Controllers
                     Console.WriteLine("当前第" + count + "个红包");
                     if (isLucky)
                     {
-                        LuckyInfo luckyInfo=GetLastLuckyInfo(records);
-                        result.code = 1;
-                        result.msg = msgs[code] + luckyInfo.ToString();
-                        isFinished = true;
-                        InsertDB(mobile, true, luckyInfo.amount);
+                        LuckyInfo luckyInfo;
+                        switch (code)
+                        {
+                            case 2:
+                            case 3:
+                                luckyInfo = GetLastLuckyInfo(records);
+                                result.code = 1;
+                                result.msg = msgs[code] + luckyInfo.ToString();
+                                isFinished = true;
+                                InsertDB(mobile, true, luckyInfo.amount);
+                                break;
+                            default:
+                                luckyInfo = GetLuckyInfo(records);
+                                result.code = 3;
+                                result.msg = msgs[code] + luckyInfo.ToString();
+                                isFinished = true;
+                                InsertDB(mobile, false, "0");
+                                break;
+                        }
+                        
                         break;
                     }
                     else
                     {
                         if (count >= luckyNumber)
                         {
+                            
                             result.code = 2;
                             result.msg = "没有大红包了!" + GetLuckyInfo(records).ToString();
                             isFinished = true;
@@ -104,7 +128,7 @@ namespace ElemeRedPacket.Controllers
             }
             catch (Exception ex)
             {
-                result.code = 3;
+                result.code = 4;
                 result.msg = "输入异常或者服务器出错。";
             }
             return Json(result);
